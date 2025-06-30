@@ -4,6 +4,7 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger"
 import { ValidationPipe } from "@nestjs/common"
 import { ExpressAdapter } from "@nestjs/platform-express"
 import express from "express"
+import * as swaggerUi from "swagger-ui-express" // Importar swagger-ui-express
 
 // Cache da aplicação para reutilizar entre requests
 let cachedApp: express.Express
@@ -33,7 +34,9 @@ async function createApp() {
     .build()
 
   const document = SwaggerModule.createDocument(app, config)
-  SwaggerModule.setup("docs", app, document)
+
+  // Usar swagger-ui-express diretamente para servir a UI
+  expressApp.use("/docs", swaggerUi.serve, swaggerUi.setup(document))
 
   // Configurar validação global
   app.useGlobalPipes(new ValidationPipe())
