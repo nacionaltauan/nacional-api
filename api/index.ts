@@ -3,12 +3,13 @@ import { AppModule } from "../src/app.module"
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger"
 import { ValidationPipe } from "@nestjs/common"
 import { ExpressAdapter } from "@nestjs/platform-express"
-import * as express from "express"
+import express from "express"
 
 // Cache da aplicação para reutilizar entre requests
 let cachedApp: express.Express
 
 async function createApp() {
+  // Criar instância do Express
   const expressApp = express()
   const adapter = new ExpressAdapter(expressApp)
 
@@ -32,7 +33,7 @@ async function createApp() {
     .build()
 
   const document = SwaggerModule.createDocument(app, config)
-  SwaggerModule.setup("api/docs", app, document)
+  SwaggerModule.setup("docs", app, document)
 
   // Configurar validação global
   app.useGlobalPipes(new ValidationPipe())
@@ -45,14 +46,18 @@ async function createApp() {
 export default async function handler(req: any, res: any) {
   try {
     if (!cachedApp) {
+      console.log("Inicializando aplicação NestJS...")
       cachedApp = await createApp()
+      console.log("Aplicação inicializada com sucesso!")
     }
+
     return cachedApp(req, res)
   } catch (error) {
-    console.error("Error in serverless function:", error)
+    console.error("Erro na função serverless:", error)
     res.status(500).json({
       error: "Internal Server Error",
       message: error.message,
+      stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
     })
   }
 }
