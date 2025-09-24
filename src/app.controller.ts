@@ -76,4 +76,45 @@ export class AppController {
       };
     }
   }
+
+  @Get('test-sheets-access')
+  async testSheetsAccess() {
+    try {
+      const { GoogleAuth } = require('google-auth-library');
+      const { google } = require('googleapis');
+      
+      const auth = new GoogleAuth({
+        credentials: {
+          client_email: process.env.CLIENT_EMAIL,
+          private_key: process.env.PRIVATE_KEY?.replace(/\\n/g, '\n'),
+        },
+        scopes: [
+          'https://www.googleapis.com/auth/drive.readonly',
+          'https://www.googleapis.com/auth/spreadsheets.readonly',
+        ],
+      });
+
+      const authClient = await auth.getClient();
+      const sheets = google.sheets({ version: 'v4', auth: authClient });
+      
+      // Testar com uma planilha pública conhecida
+      const response = await sheets.spreadsheets.get({
+        spreadsheetId: '1eyj0PSNlZvvxnj9H0G0LM_jn2Ry4pSHACH2WwP7xUWw',
+      });
+
+      return {
+        status: 'success',
+        message: 'Sheets access working',
+        spreadsheetTitle: response.data.properties?.title,
+        spreadsheetId: response.data.spreadsheetId,
+      };
+    } catch (error) {
+      return {
+        status: 'error',
+        message: error.message,
+        errorCode: error.code,
+        errorDetails: error.errors,
+      };
+    }
+  }
 }
