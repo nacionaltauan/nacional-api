@@ -29,4 +29,16 @@ export class AppController {
       },
     };
   }
+
+  @Get('env-check')
+  envCheck() {
+    return {
+      status: 'Environment variables check',
+      variables: {
+        PROJECT_ID: !!process.env.PROJECT_ID,
+        CLIENT_EMAIL: !!process.env.CLIENT_EMAIL,
+        PRIVATE_KEY: !!process.env.PRIVATE_KEY,
+      }
+    };
+  }
 }
