@@ -41,4 +41,39 @@ export class AppController {
       }
     };
   }
+
+  @Get('test-google-auth')
+  async testGoogleAuth() {
+    try {
+      const { GoogleAuth } = require('google-auth-library');
+      const auth = new GoogleAuth({
+        credentials: {
+          client_email: process.env.CLIENT_EMAIL,
+          private_key: process.env.PRIVATE_KEY?.replace(/\\n/g, '\n'),
+        },
+        scopes: [
+          'https://www.googleapis.com/auth/drive.readonly',
+          'https://www.googleapis.com/auth/spreadsheets.readonly',
+        ],
+      });
+
+      const authClient = await auth.getClient();
+      return {
+        status: 'success',
+        message: 'Google Auth initialized successfully',
+        clientEmail: process.env.CLIENT_EMAIL,
+        privateKeyLength: process.env.PRIVATE_KEY?.length,
+        privateKeyStartsWith: process.env.PRIVATE_KEY?.substring(0, 30),
+      };
+    } catch (error) {
+      return {
+        status: 'error',
+        message: error.message,
+        stack: error.stack,
+        clientEmail: process.env.CLIENT_EMAIL,
+        privateKeyLength: process.env.PRIVATE_KEY?.length,
+        privateKeyStartsWith: process.env.PRIVATE_KEY?.substring(0, 30),
+      };
+    }
+  }
 }
