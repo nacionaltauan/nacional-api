@@ -18,6 +18,7 @@ async function createApp() {
     const allowedOrigins = [
       "https://dashboard-itens-pessoais-black.vercel.app",
       "https://dashboard-itens-pessoais.vercel.app",
+      "https://dashboard-ccbb-flight2.vercel.app",
       "http://localhost:3000",
       "http://localhost:3001"
     ]
@@ -48,6 +49,7 @@ async function createApp() {
     origin: [
       "https://dashboard-itens-pessoais-black.vercel.app",
       "https://dashboard-itens-pessoais.vercel.app",
+      "https://dashboard-ccbb-flight2.vercel.app",
       "http://localhost:3000",
       "http://localhost:3001"
     ],
