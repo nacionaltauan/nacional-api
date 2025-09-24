@@ -12,15 +12,49 @@ let cachedApp: express.Express
 async function createApp() {
   // Criar instância do Express
   const expressApp = express()
+  
+  // Middleware CORS adicional para garantir funcionamento
+  expressApp.use((req, res, next) => {
+    const allowedOrigins = [
+      "https://dashboard-itens-pessoais-black.vercel.app",
+      "https://dashboard-itens-pessoais.vercel.app",
+      "http://localhost:3000",
+      "http://localhost:3001"
+    ]
+    
+    const origin = req.headers.origin
+    if (allowedOrigins.includes(origin as string)) {
+      res.setHeader('Access-Control-Allow-Origin', origin as string)
+    }
+    
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin')
+    res.setHeader('Access-Control-Allow-Credentials', 'true')
+    
+    if (req.method === 'OPTIONS') {
+      res.status(200).end()
+      return
+    }
+    
+    next()
+  })
+  
   const adapter = new ExpressAdapter(expressApp)
 
   const app = await NestFactory.create(AppModule, adapter)
 
   // Configurar CORS
   app.enableCors({
-    origin: true,
+    origin: [
+      "https://dashboard-itens-pessoais-black.vercel.app",
+      "https://dashboard-itens-pessoais.vercel.app",
+      "http://localhost:3000",
+      "http://localhost:3001"
+    ],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept", "Origin"],
+    credentials: true,
+    optionsSuccessStatus: 200
   })
 
   // Configurar Swagger
