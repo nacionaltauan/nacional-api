@@ -5,6 +5,7 @@ import { ValidationPipe } from "@nestjs/common"
 import { ExpressAdapter } from "@nestjs/platform-express"
 import express from "express"
 import * as swaggerUi from "swagger-ui-express" // Importar swagger-ui-express
+import { AllExceptionsFilter } from "../src/filters/http-exception.filter"
 
 // Cache da aplicação para reutilizar entre requests
 let cachedApp: express.Express
@@ -75,7 +76,14 @@ async function createApp() {
   expressApp.use("/docs", swaggerUi.serve, swaggerUi.setup(document))
 
   // Configurar validação global
-  app.useGlobalPipes(new ValidationPipe())
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    transform: true,
+    forbidNonWhitelisted: false,
+  }))
+
+  // Configurar filtro de exceções global
+  app.useGlobalFilters(new AllExceptionsFilter())
 
   await app.init()
   return expressApp
@@ -86,17 +94,33 @@ export default async function handler(req: any, res: any) {
   try {
     if (!cachedApp) {
       console.log("Inicializando aplicação NestJS...")
-      cachedApp = await createApp()
-      console.log("Aplicação inicializada com sucesso!")
+      try {
+        cachedApp = await createApp()
+        console.log("Aplicação inicializada com sucesso!")
+      } catch (initError) {
+        console.error("Erro ao inicializar aplicação:", initError)
+        return res.status(500).json({
+          success: false,
+          statusCode: 500,
+          message: "Erro ao inicializar aplicação",
+          error: initError.message,
+          timestamp: new Date().toISOString(),
+        })
+      }
     }
 
+    // Deixar o NestJS tratar os erros através do ExceptionFilter
     return cachedApp(req, res)
   } catch (error) {
-    console.error("Erro na função serverless:", error)
-    res.status(500).json({
-      error: "Internal Server Error",
-      message: error.message,
-      stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
+    // Este catch só deve capturar erros críticos de inicialização
+    // Erros de rotas são tratados pelo AllExceptionsFilter
+    console.error("Erro crítico na função serverless:", error)
+    return res.status(500).json({
+      success: false,
+      statusCode: 500,
+      message: "Erro crítico no servidor",
+      error: error.message,
+      timestamp: new Date().toISOString(),
     })
   }
 }
