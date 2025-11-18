@@ -20,6 +20,7 @@ async function createApp() {
       "https://dashboard-itens-pessoais-black.vercel.app",
       "https://dashboard-itens-pessoais.vercel.app",
       "https://dashboard-ccbb-flight2.vercel.app",
+      "https://dashboard-bbseg-campanha-guardachuv.vercel.app",
       "http://localhost:3000",
       "http://localhost:3001"
     ]
@@ -51,6 +52,7 @@ async function createApp() {
       "https://dashboard-itens-pessoais-black.vercel.app",
       "https://dashboard-itens-pessoais.vercel.app",
       "https://dashboard-ccbb-flight2.vercel.app",
+      "https://dashboard-bbseg-campanha-guardachuv.vercel.app",
       "http://localhost:3000",
       "http://localhost:3001"
     ],
@@ -68,6 +70,7 @@ async function createApp() {
     .addTag("google-drive", "Operações do Google Drive")
     .addTag("google-sheets", "Operações do Google Sheets")
     .addTag("brasilseg", "Operações específicas do Brasilseg")
+    .addTag("bbseg-guardachuva", "Operações específicas do BBSEG Guarda-chuva")
     .build()
 
   const document = SwaggerModule.createDocument(app, config)
