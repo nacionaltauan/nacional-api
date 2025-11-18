@@ -4,6 +4,7 @@ import { AppController } from "./app.controller"
 import { AppService } from "./app.service"
 import { GoogleModule } from "../google/google.module"
 import { BrasilsegModule } from "../brasilseg/brasilseg.module"
+import { BbsegGuardachuvaModule } from "../bbseg-guardachuva/bbseg-guardachuva.module"
 import googleConfig from "../config/google.config"
 
 @Module({
@@ -14,6 +15,7 @@ import googleConfig from "../config/google.config"
     }),
     GoogleModule,
     BrasilsegModule,
+    BbsegGuardachuvaModule,
   ],
   controllers: [AppController],
   providers: [AppService],
